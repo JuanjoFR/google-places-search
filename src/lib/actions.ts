@@ -1,8 +1,5 @@
 'use server';
 
-// TODO continuar con la implementación de la API de Google Places
-// https://chat.deepseek.com/a/chat/s/1672cf6e-c761-4218-b127-7b1939d2eccf
-
 // Example using the new official SDK (client library)
 // https://github.com/googleapis/google-cloud-node/blob/main/packages/google-maps-places/samples/generated/v1/places.search_text.js
 export async function searchPlaces(input: string) {
@@ -14,13 +11,15 @@ export async function searchPlaces(input: string) {
         headers: {
           'Content-Type': 'application/json',
           'X-Goog-Api-Key': process.env.GOOGLE_MAPS_API_KEY!,
-          'X-Goog-FieldMask':
-            'places.displayName,places.formattedAddress,places.location,places.id',
+          // 'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.location,places.id',
+          'X-Goog-FieldMask': 'places.id,nextPageToken',
         },
         body: JSON.stringify({
           textQuery: input,
           languageCode: 'es',
           regionCode: 'ES',
+          pageSize: process.env.NODE_ENV === 'development' ? 3 : 0, // https://developers.google.com/maps/documentation/places/web-service/text-search?hl=es-419#pagesize
+          // pageToken: '',
         }),
       }
     );
