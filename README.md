@@ -1,26 +1,26 @@
-# Website Development Studio - Business Prospecting Tool
+# Google Places Search
 
-A tool designed to help identify and contact businesses that need website design and development services.
+A tool designed to search and retrieve information about places using Google Places API.
 
 ## Purpose
 
 This project aims to streamline the process of:
 
-- Finding businesses without websites or with outdated web presence
-- Managing potential client information
-- Tracking outreach efforts
-- Converting leads into website development projects
+- Finding places using Google Places API
+- Managing place information
+- Tracking search results
+- Processing place data
 
 ## Overview
 
-The tool helps web developers and designers prospect for new clients by identifying businesses that could benefit from professional website services.
+The tool helps users search and retrieve detailed information about places using Google Places API.
 
 ## Docker Setup
 
 Start the PostgreSQL development database using Docker Compose:
 
 ```bash
-docker compose --env-file .env.local --project-name website-development-studio up --detach
+docker compose --env-file .env.local --project-name google-places-search up --detach
 ```
 
 ## Database Commands
