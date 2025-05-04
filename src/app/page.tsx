@@ -1,7 +1,6 @@
-'use client';
-
-import { Button } from '@/components/ui/button';
+import SearchForm from '@/components/SearchForm';
 import { searchPlaces } from '@/lib/actions';
+import * as React from 'react';
 
 export default function Home() {
   async function handleClick() {
@@ -10,9 +9,10 @@ export default function Home() {
   }
 
   return (
-    <div>
-      <h1>Hello world</h1>
-      <Button onClick={handleClick}>Button</Button>
+    <div className="min-h-screen flex items-center justify-center">
+      <React.Suspense fallback={<div>Loading...</div>}>
+        <SearchForm />
+      </React.Suspense>
     </div>
   );
 }
