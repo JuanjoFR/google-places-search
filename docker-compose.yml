@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: wds_postgres
+    container_name: google_places_search_postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${DB_USER}
@@ -18,13 +18,13 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - wds_network
+      - google_places_search_network
 
 volumes:
   postgres_data:
-    name: wds_postgres_data
+    name: google_places_search_postgres_data
 
 networks:
-  wds_network:
-    name: wds_network
+  google_places_search_network:
+    name: google_places_search_network
     driver: bridge
