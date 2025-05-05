@@ -2,6 +2,7 @@
 
 import { Table } from '@tanstack/react-table';
 import { DataTableViewOptions } from './DataTableViewOptions';
+import { DataTableMoreOptions } from './DataTableMoreOptions';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -11,6 +12,18 @@ export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
   // const isFiltered = table.getState().columnFilters.length > 0;
+
+  // https://www.npmjs.com/package/tanstack-table-export-to-csv
+  // const handleExportToCsv = (): void => {
+  //   const headers = table
+  //     .getHeaderGroups()
+  //     .map((x) => x.headers)
+  //     .flat();
+
+  //   const rows = table.getCoreRowModel().rows;
+
+  //   const csvBlob = getCsvBlob(headers, rows);
+  // };
 
   return (
     <div className="flex items-center justify-between">
@@ -48,7 +61,10 @@ export function DataTableToolbar<TData>({
           </Button>
         )} */}
       </div>
-      <DataTableViewOptions table={table} />
+      <div className="flex items-center space-x-2">
+        <DataTableViewOptions table={table} />
+        <DataTableMoreOptions table={table} />
+      </div>
     </div>
   );
 }

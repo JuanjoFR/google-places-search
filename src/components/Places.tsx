@@ -6,7 +6,7 @@ import * as React from 'react';
 import { DataTable } from './places/DataTable';
 import { columns } from './places/columns';
 
-type SelectPlace = typeof placesTable.$inferSelect;
+type Place = typeof placesTable.$inferSelect;
 
 interface PlacesProps {
   textQuery: string;
@@ -18,7 +18,7 @@ export const getPlaces = React.cache(
   async ({ textQuery, languageCode, regionCode }: PlacesProps) => {
     const processedPlaces = new Set();
     const apiListResults: { id: string }[] = [];
-    const places: SelectPlace[] = [];
+    const places: Place[] = [];
 
     async function processPage(pageToken?: string) {
       console.log('Processing page with token:', pageToken);
