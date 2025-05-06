@@ -7,6 +7,7 @@ import * as z from 'zod';
 import { Button } from './ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from './ui/form';
 import { Input } from './ui/input';
+import { Search } from 'lucide-react';
 
 const searchFormSchema = z.object({
   q: z.string().min(2, {
@@ -38,7 +39,7 @@ export default function SearchForm() {
   return (
     <div className="w-full max-w-xl mx-auto px-4">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="relative">
           <input type="hidden" {...form.register('lang')} />
           <input type="hidden" {...form.register('region')} />
           <FormField
@@ -50,15 +51,19 @@ export default function SearchForm() {
                   <Input
                     placeholder="Search places..."
                     {...field}
-                    className="h-12 text-lg"
+                    className="h-12 text-lg pr-12"
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full sm:w-auto">
-            Search
+          <Button
+            type="submit"
+            size="icon"
+            className="absolute right-0 top-0 h-12 w-12"
+          >
+            <Search className="h-5 w-5" />
           </Button>
         </form>
       </Form>

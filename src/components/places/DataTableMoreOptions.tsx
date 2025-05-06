@@ -74,7 +74,6 @@ export function DataTableMoreOptions<TData>({
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
           }}
-          className="cursor-pointer"
         >
           Download CSV
         </DropdownMenuItem>

@@ -14,67 +14,48 @@ interface PlacesProps {
   regionCode: string;
 }
 
+/**
+ * Cached version of places search to save resources.
+ * Note: Results will be cached for the lifetime of the server process.
+ */
 export const getPlaces = React.cache(
   async ({ textQuery, languageCode, regionCode }: PlacesProps) => {
-    const processedPlaces = new Set();
-    const apiListResults: { id: string }[] = [];
     const places: Place[] = [];
 
+    if (!textQuery) {
+      return places;
+    }
+
+    let pageIndex = 0;
+
     async function processPage(pageToken?: string) {
-      console.log('Processing page with token:', pageToken);
-      await new Promise((resolve) => setTimeout(resolve, 3000)); // Simulate delay
-
-      if (!textQuery) {
-        return;
-      }
-
+      // Log only when fetching new pages
+      console.log(
+        `[Places] Fetching page ${pageIndex + 1}${pageToken ? ' with continuation token' : ''}`
+      );
+      pageIndex++;
       const data = await searchPlacesFromAPI({
         textQuery,
         languageCode,
         regionCode,
         pageToken,
       });
-      console.log('Data:', data);
 
       for (const place of data.places) {
-        if (processedPlaces.has(place.id)) continue;
-        processedPlaces.add(place.id);
-
-        // Check if place exists in database
-        // const existingPlace = await db.places.findUnique({
-        //   where: { id: place.id },
-        // });
         const existingPlace = await db.query.placesTable.findFirst({
           where: eq(placesTable.places_api_id, place.id),
         });
-        console.log('Existing Place:', existingPlace);
 
         if (existingPlace) {
-          const found = places.find((p) => p.id === existingPlace.id);
-          if (!found) {
-            places.push(existingPlace);
-          }
+          places.push(existingPlace);
         } else {
-          // Get details and save to database
-          console.log('TODO get details and save to database');
+          // Log only for new places that need API calls
+          console.log(`[Places] Fetching details for new place: ${place.id}`);
+          await new Promise((resolve) => setTimeout(resolve, 200));
           const details = await getPlaceDetails(place.id);
-          // await db.place.create({
-          //   data: {
-          //     id: place.id,
-          //     name: details.displayName,
-          //     address: details.formattedAddress,
-          //     location: details.location,
-          //   },
-          // });
-          console.log('data to insert:', {
-            places_api_id: place.id,
-            display_name: details.displayName,
-            international_phone_number: details.internationalPhoneNumber,
-            website_uri: details.websiteUri,
-          });
-          let insertResult;
+
           try {
-            insertResult = await db
+            const insertResult = await db
               .insert(placesTable)
               .values({
                 places_api_id: place.id,
@@ -83,32 +64,41 @@ export const getPlaces = React.cache(
                 website_uri: details.websiteUri,
               })
               .returning();
+            places.push(insertResult[0]);
           } catch (error: unknown) {
             if (
               error instanceof Error &&
               error.message.includes('places_places_api_id_unique')
             ) {
               console.log(
-                `Place with ID ${place.id} already exists in database - skipping insert`
+                `[Places] Handling concurrent insert for place: ${place.id}`
               );
+              const existingRecord = await db.query.placesTable.findFirst({
+                where: eq(placesTable.places_api_id, place.id),
+              });
+              if (existingRecord) {
+                places.push(existingRecord);
+              }
             } else {
+              console.error(
+                `[Places] Error processing place ${place.id}:`,
+                error
+              );
               throw error;
             }
           }
-          console.log('Insert Result:', insertResult);
         }
-
-        apiListResults.push(place);
       }
 
       // Process next page if token exists
-      // if (data.nextPageToken) {
-      //   await processPage(data.nextPageToken);
-      // }
+      if (data.nextPageToken) {
+        // Add delay to respect API rate limits
+        await new Promise((resolve) => setTimeout(resolve, 200));
+        await processPage(data.nextPageToken);
+      }
     }
 
     await processPage();
-
     return places;
   }
 );
@@ -118,62 +108,13 @@ export default async function Places({
   languageCode,
   regionCode,
 }: PlacesProps) {
-  // const places = await getPlaces({
-  //   textQuery,
-  //   languageCode,
-  //   regionCode,
-  // });
-  const places = [
-    {
-      id: 1,
-      places_api_id: 'ChIJVY_R0pWSpBIRsBvGt00k1TQ',
-      display_name: {
-        text: 'Clínica Dental Abac | Tu Dentista en Terrassa',
-        languageCode: 'es',
-      },
-      international_phone_number: '+34 937 33 01 66',
-      website_uri: 'https://www.centredentalabac.com/',
-      updated_at: null,
-      created_at: new Date('2025-05-05T10:50:33.744Z'),
-      deleted_at: null,
-    },
-    {
-      id: 2,
-      places_api_id: 'ChIJvdVHgJSSpBIRIU8nQ6hbFIY',
-      display_name: { text: 'Clínica Dental Galileu', languageCode: 'es' },
-      international_phone_number: '+34 937 88 35 14',
-      website_uri: 'http://www.dentalgalileo.com/',
-      updated_at: null,
-      created_at: new Date('2025-05-05T11:05:02.302Z'),
-      deleted_at: null,
-    },
-  ];
+  const places = await getPlaces({
+    textQuery,
+    languageCode,
+    regionCode,
+  });
 
-  console.log('Places:', places);
+  await new Promise((resolve) => setTimeout(resolve, 4000));
 
-  return (
-    // <div>
-    //   <div>{`show ${textQuery}, ${languageCode}, ${regionCode}`}</div>
-    //   <div>
-    //     {places.map((place) => (
-    //       <div key={place.id}>
-    //         <h3>{place.display_name.text}</h3>
-    //         <p>{place.international_phone_number}</p>
-    //         <p>{place.website_uri}</p>
-    //       </div>
-    //     ))}
-    //   </div>
-    // </div>
-    <div className="container mx-auto">
-      <div className="h-full flex-1 flex-col space-y-8 p-8 flex">
-        <div className="flexspace-y-2">
-          <h1 className="text-2xl font-bold tracking-tight">{textQuery}</h1>
-          <p className="text-muted-foreground">
-            {`Search results for "${textQuery}" in ${languageCode} (${regionCode})`}
-          </p>
-        </div>
-        <DataTable data={places} columns={columns} />
-      </div>
-    </div>
-  );
+  return <DataTable data={places} columns={columns} />;
 }

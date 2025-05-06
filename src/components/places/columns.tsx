@@ -105,7 +105,7 @@ export const columns: ColumnDef<Place>[] = [
     accessorKey: 'created_at',
     header: 'Created at',
     meta: {
-      viewDropdownDisplayName: 'Created At',
+      viewDropdownDisplayName: 'Created at',
     },
     cell: ({ row }) => {
       const createdAt = row.getValue('created_at') as Place['created_at'];
@@ -117,7 +117,7 @@ export const columns: ColumnDef<Place>[] = [
     accessorKey: 'updated_at',
     header: 'Updated at',
     meta: {
-      viewDropdownDisplayName: 'Updated At',
+      viewDropdownDisplayName: 'Updated at',
     },
     cell: ({ row }) => {
       const updatedAt = row.getValue('updated_at') as Place['updated_at'];

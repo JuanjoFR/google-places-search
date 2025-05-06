@@ -24,7 +24,6 @@ export async function searchPlacesFromAPI({
       languageCode,
       regionCode,
       pageToken,
-      pageSize: 2, // TODO remove this in production
     }),
   });
 
