@@ -114,7 +114,5 @@ export default async function Places({
     regionCode,
   });
 
-  await new Promise((resolve) => setTimeout(resolve, 4000));
-
   return <DataTable data={places} columns={columns} />;
 }
