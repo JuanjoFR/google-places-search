@@ -10,6 +10,8 @@ This application streamlines the process of searching and analyzing location dat
 
 Watch how the application works:
 
+[google-places-search.webm](https://github.com/user-attachments/assets/0466556b-dec2-4c65-b19a-5d11dcb07627)
+
 This demonstration shows:
 
 - Searching for places using the Google Places API
